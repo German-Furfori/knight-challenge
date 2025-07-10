@@ -30,7 +30,7 @@ public class KnightService {
         PositionDto position = this.validateStartingPoint(commands.getCommands().get(0), board);
 
         for (int i = 1; i < commandList.size(); i++) {
-            position = this.makeMovement(commandList.get(i), position, board);
+            this.makeMovement(commandList.get(i), position, board);
         }
 
         return new ResultDto(position, StatusEnum.SUCCESS);
@@ -49,28 +49,45 @@ public class KnightService {
 
     private PositionDto makeMovement(String command, PositionDto position, Board board) {
         String[] movement = command.split(" ");
+        boolean thereIsNoObstacle = true;
 
         if ("ROTATE".equals(movement[0])) {
             position.setDirection(DirectionEnum.valueOf(movement[1]));
         } else {
             int moves = Integer.parseInt(movement[1]);
-            for (int i = 0; i < moves; i++) {
+            for (int i = 0; i < moves && thereIsNoObstacle; i++) {
                 switch (position.getDirection()) {
                     case SOUTH:
                         if (position.getY() - 1 < 0) this.outOfTheBoard();
-                        if (this.isNotObstacle(position.getX(), position.getY() - 1, board)) position.setY(position.getY() - 1);
+                        if (this.isNotObstacle(position.getX(), position.getY() - 1, board)) {
+                            position.setY(position.getY() - 1);
+                        } else {
+                            thereIsNoObstacle = false;
+                        }
                         break;
                     case NORTH:
                         if (position.getY() + 1 >= board.getHeight()) this.outOfTheBoard();
-                        if (this.isNotObstacle(position.getX(), position.getY() + 1, board)) position.setY(position.getY() + 1);
+                        if (this.isNotObstacle(position.getX(), position.getY() + 1, board)) {
+                            position.setY(position.getY() + 1);
+                        } else {
+                            thereIsNoObstacle = false;
+                        }
                         break;
                     case WEST:
                         if (position.getX() - 1 < 0) this.outOfTheBoard();
-                        if (this.isNotObstacle(position.getX() - 1, position.getY(), board)) position.setX(position.getX() - 1);
+                        if (this.isNotObstacle(position.getX() - 1, position.getY(), board)) {
+                            position.setX(position.getX() - 1);
+                        } else {
+                            thereIsNoObstacle = false;
+                        }
                         break;
                     case EAST:
                         if (position.getX() + 1 >= board.getWidth()) this.outOfTheBoard();
-                        if (this.isNotObstacle(position.getX() + 1, position.getY(), board)) position.setX(position.getX() + 1);
+                        if (this.isNotObstacle(position.getX() + 1, position.getY(), board)) {
+                            position.setX(position.getX() + 1);
+                        } else {
+                            thereIsNoObstacle = false;
+                        }
                 }
             }
         }
