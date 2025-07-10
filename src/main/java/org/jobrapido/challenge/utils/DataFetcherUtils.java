@@ -1,8 +1,6 @@
 package org.jobrapido.challenge.utils;
 
-import org.jobrapido.challenge.dto.output.ResultDto;
-import org.jobrapido.challenge.enums.StatusEnum;
-
+import org.jobrapido.challenge.exception.GenericErrorException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,6 +8,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class DataFetcherUtils {
+
+    private static final String GENERIC_ERROR = "GENERIC_ERROR";
 
     public static String getData(String url) {
         HttpClient client = HttpClient.newHttpClient();
@@ -23,13 +23,11 @@ public class DataFetcherUtils {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            System.out.println(new ResultDto(StatusEnum.GENERIC_ERROR));
-            System.exit(1);
+            throw new GenericErrorException(GENERIC_ERROR);
         }
 
         if (response.statusCode() != 200) {
-            System.out.println(new ResultDto(StatusEnum.GENERIC_ERROR));
-            System.exit(1);
+            throw new GenericErrorException(GENERIC_ERROR);
         }
 
         return response.body();

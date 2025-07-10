@@ -3,8 +3,8 @@ package org.jobrapido.challenge.service;
 import lombok.RequiredArgsConstructor;
 import org.jobrapido.challenge.dto.output.PositionDto;
 import org.jobrapido.challenge.dto.output.ResultDto;
-import org.jobrapido.challenge.enums.DirectionEnum;
-import org.jobrapido.challenge.enums.StatusEnum;
+import org.jobrapido.challenge.exception.InvalidStartPositionException;
+import org.jobrapido.challenge.exception.OutOfTheBoardException;
 import org.jobrapido.challenge.model.Board;
 import org.jobrapido.challenge.model.Commands;
 import org.jobrapido.challenge.model.Point;
@@ -33,7 +33,7 @@ public class KnightService {
             this.makeMovement(commandList.get(i), position, board);
         }
 
-        return new ResultDto(position, StatusEnum.SUCCESS);
+        return new ResultDto(position, "SUCCESS");
     }
 
     private PositionDto validateStartingPoint(String startingPoint, Board board) {
@@ -44,20 +44,20 @@ public class KnightService {
         || point.getX() < 0 || point.getY() < 0) this.invalidStartPosition();
         if (!this.isNotObstacle(point.getX(), point.getY(), board)) this.invalidStartPosition();
 
-        return new PositionDto(point.getX(), point.getY(), DirectionEnum.valueOf(xy[2]));
+        return new PositionDto(point.getX(), point.getY(), xy[2]);
     }
 
-    private PositionDto makeMovement(String command, PositionDto position, Board board) {
+    private void makeMovement(String command, PositionDto position, Board board) {
         String[] movement = command.split(" ");
         boolean thereIsNoObstacle = true;
 
         if ("ROTATE".equals(movement[0])) {
-            position.setDirection(DirectionEnum.valueOf(movement[1]));
+            position.setDirection(movement[1]);
         } else {
             int moves = Integer.parseInt(movement[1]);
             for (int i = 0; i < moves && thereIsNoObstacle; i++) {
                 switch (position.getDirection()) {
-                    case SOUTH:
+                    case "SOUTH":
                         if (position.getY() - 1 < 0) this.outOfTheBoard();
                         if (this.isNotObstacle(position.getX(), position.getY() - 1, board)) {
                             position.setY(position.getY() - 1);
@@ -65,7 +65,7 @@ public class KnightService {
                             thereIsNoObstacle = false;
                         }
                         break;
-                    case NORTH:
+                    case "NORTH":
                         if (position.getY() + 1 >= board.getHeight()) this.outOfTheBoard();
                         if (this.isNotObstacle(position.getX(), position.getY() + 1, board)) {
                             position.setY(position.getY() + 1);
@@ -73,7 +73,7 @@ public class KnightService {
                             thereIsNoObstacle = false;
                         }
                         break;
-                    case WEST:
+                    case "WEST":
                         if (position.getX() - 1 < 0) this.outOfTheBoard();
                         if (this.isNotObstacle(position.getX() - 1, position.getY(), board)) {
                             position.setX(position.getX() - 1);
@@ -81,7 +81,7 @@ public class KnightService {
                             thereIsNoObstacle = false;
                         }
                         break;
-                    case EAST:
+                    case "EAST":
                         if (position.getX() + 1 >= board.getWidth()) this.outOfTheBoard();
                         if (this.isNotObstacle(position.getX() + 1, position.getY(), board)) {
                             position.setX(position.getX() + 1);
@@ -91,8 +91,6 @@ public class KnightService {
                 }
             }
         }
-
-        return position;
     }
 
     private Boolean isNotObstacle(Integer x, Integer y, Board board) {
@@ -100,13 +98,11 @@ public class KnightService {
     }
 
     private void outOfTheBoard() {
-        System.out.println(new ResultDto(StatusEnum.OUT_OF_THE_BOARD));
-        System.exit(1);
+        throw new OutOfTheBoardException("OUT_OF_THE_BOARD");
     }
 
     private void invalidStartPosition() {
-        System.out.println(new ResultDto(StatusEnum.INVALID_START_POSITION));
-        System.exit(1);
+        throw new InvalidStartPositionException("INVALID_START_POSITION");
     }
 
 }
