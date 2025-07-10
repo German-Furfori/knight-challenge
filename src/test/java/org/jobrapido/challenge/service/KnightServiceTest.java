@@ -19,7 +19,7 @@ public class KnightServiceTest extends MainTest {
     KnightService knightService = new KnightService(boardService, commandsService);
 
     @Test
-    void executeKnightMovements_withoutObstacles_expectCorrectOutput() {
+    void executeKnightMovements_withoutGettingObstacles_expectCorrectOutput() {
         Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(
                 5, 5, Set.of("20", "21", "22", "23")
         ));
@@ -41,7 +41,7 @@ public class KnightServiceTest extends MainTest {
     }
 
     @Test
-    void executeKnightMovements_withObstacles_expectCorrectOutput() {
+    void executeKnightMovements_gettingObstacles_expectCorrectOutput() {
         Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(
                 10, 10,
                 Set.of("08", "18", "17", "16", "15", "14", "22", "32", "42", "54",
