@@ -2,7 +2,6 @@ package org.jobrapido.challenge.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.util.Set;
 
 @Data
@@ -13,6 +12,6 @@ public class Board {
 
     private Integer height;
 
-    private Set<Point> obstacles;
+    private Set<String> obstacles;
 
 }

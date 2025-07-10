@@ -20,13 +20,10 @@ public class BoardService {
     }
 
     private Board mapBoardDtoToBoard(BoardDto boardDto) {
-        Set<Point> obstacles = new HashSet<>();
+        Set<String> obstacles = new HashSet<>();
 
         for (PointDto point : boardDto.getObstacles()) {
-            obstacles.add(new Point(
-                    point.getX(),
-                    point.getY()
-            ));
+            obstacles.add(String.format("%d%d", point.getX(), point.getY()));
         }
 
         return new Board(

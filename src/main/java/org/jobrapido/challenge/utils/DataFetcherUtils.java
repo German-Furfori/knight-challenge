@@ -1,5 +1,8 @@
 package org.jobrapido.challenge.utils;
 
+import org.jobrapido.challenge.dto.output.ResultDto;
+import org.jobrapido.challenge.enums.StatusEnum;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -20,12 +23,12 @@ public class DataFetcherUtils {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            System.out.println();
+            System.out.println(new ResultDto(StatusEnum.GENERIC_ERROR));
             System.exit(1);
         }
 
         if (response.statusCode() != 200) {
-            System.out.println();
+            System.out.println(new ResultDto(StatusEnum.GENERIC_ERROR));
             System.exit(1);
         }
 
