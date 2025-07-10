@@ -5,7 +5,8 @@ import lombok.Data;
 import org.jobrapido.challenge.enums.DirectionEnum;
 
 @Data
-public class FinalPositionDto {
+@AllArgsConstructor
+public class PositionDto {
 
     private Integer x;
 

@@ -21,11 +21,12 @@ public class KnightServiceTest extends MainTest {
     @Test
     void executeKnightMovements_withCorrectInput_expectCorrectOutput() {
         Mockito.when(boardService.getBoard()).thenReturn(this.getBoard());
+        Mockito.when(commandsService.getCommands()).thenReturn(this.getCommands());
 
         ResultDto result = this.knightService.moveKnight();
 
-        assertEquals(1, result.getPosition().getX());
-        assertEquals(1, result.getPosition().getY());
+        assertEquals(4, result.getPosition().getX());
+        assertEquals(0, result.getPosition().getY());
         assertEquals(DirectionEnum.SOUTH, result.getPosition().getDirection());
         assertEquals(StatusEnum.SUCCESS, result.getStatus());
     }

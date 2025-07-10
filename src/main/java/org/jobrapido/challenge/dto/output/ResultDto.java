@@ -10,7 +10,7 @@ import static org.jobrapido.challenge.utils.JsonUtils.GSON;
 @AllArgsConstructor
 public class ResultDto {
 
-    private FinalPositionDto position;
+    private PositionDto position;
 
     private StatusEnum status;
 
