@@ -12,25 +12,29 @@ public class DataFetcherUtils {
     private static final String GENERIC_ERROR = "GENERIC_ERROR";
 
     public static String getData(String envVar) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(System.getenv(envVar)))
-                .GET()
-                .build();
-
-        HttpResponse<String> response;
-
         try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(System.getenv(envVar)))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response;
+
+            try {
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException | InterruptedException e) {
+                throw new GenericErrorException(GENERIC_ERROR);
+            }
+
+            if (response.statusCode() != 200) {
+                throw new GenericErrorException(GENERIC_ERROR);
+            }
+
+            return response.body();
+        } catch (Exception e) {
             throw new GenericErrorException(GENERIC_ERROR);
         }
-
-        if (response.statusCode() != 200) {
-            throw new GenericErrorException(GENERIC_ERROR);
-        }
-
-        return response.body();
     }
 
 }
