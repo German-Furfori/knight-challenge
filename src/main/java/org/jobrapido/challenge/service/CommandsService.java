@@ -8,7 +8,7 @@ import static org.jobrapido.challenge.utils.JsonUtils.GSON;
 public class CommandsService {
 
     public Commands getCommands() {
-        String response = DataFetcherUtils.getData("https://storage.googleapis.com/jobrapido-backend-test/commands.json");
+        String response = DataFetcherUtils.getData("COMMANDS_API");
         return GSON.fromJson(response, Commands.class);
     }
 

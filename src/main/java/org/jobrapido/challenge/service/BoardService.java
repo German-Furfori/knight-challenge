@@ -13,7 +13,7 @@ import static org.jobrapido.challenge.utils.JsonUtils.GSON;
 public class BoardService {
 
     public Board getBoard() {
-        String response = DataFetcherUtils.getData("https://storage.googleapis.com/jobrapido-backend-test/board.json");
+        String response = DataFetcherUtils.getData("BOARD_API");
         BoardDto board = GSON.fromJson(response, BoardDto.class);
 
         return this.mapBoardDtoToBoard(board);
