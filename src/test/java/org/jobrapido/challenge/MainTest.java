@@ -1,18 +1,17 @@
 package org.jobrapido.challenge;
 
-import org.jobrapido.challenge.model.Board;
-import org.jobrapido.challenge.model.Commands;
-
+import org.jobrapido.challenge.dto.input.BoardDto;
+import org.jobrapido.challenge.dto.input.CommandsDto;
+import org.jobrapido.challenge.dto.input.PointDto;
 import java.util.List;
-import java.util.Set;
 
 public abstract class MainTest {
 
-    protected Board getBoard(Integer x, Integer y, Set<String> obstacles) {
-        return new Board(x, y, obstacles);
+    protected BoardDto getBoard(Integer x, Integer y, List<PointDto> obstacles) {
+        return new BoardDto(x, y, obstacles);
     }
 
-    protected Commands getCommands(List<String> commands) {
-        return new Commands(commands);
+    protected CommandsDto getCommands(List<String> commands) {
+        return new CommandsDto(commands);
     }
 }

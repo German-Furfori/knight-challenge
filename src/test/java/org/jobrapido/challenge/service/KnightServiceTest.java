@@ -1,6 +1,7 @@
 package org.jobrapido.challenge.service;
 
 import org.jobrapido.challenge.MainTest;
+import org.jobrapido.challenge.dto.input.PointDto;
 import org.jobrapido.challenge.dto.output.ResultDto;
 import org.jobrapido.challenge.exception.InvalidStartPositionException;
 import org.jobrapido.challenge.exception.OutOfTheBoardException;
@@ -10,18 +11,19 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
 public class KnightServiceTest extends MainTest {
 
+    DataFetcherService dataFetcherService = Mockito.mock(DataFetcherService.class);
 
-    BoardService boardService = Mockito.mock(BoardService.class);
+    BoardService boardService = new BoardService(dataFetcherService);
 
-    CommandsService commandsService = Mockito.mock(CommandsService.class);
+    CommandsService commandsService = new CommandsService(dataFetcherService, boardService);
 
     KnightService knightService = new KnightService(boardService, commandsService);
 
@@ -46,10 +48,12 @@ public class KnightServiceTest extends MainTest {
 
     @Test
     void executeKnightMovements_withoutGettingObstacles_expectSuccessOutput() {
-        Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(
-                5, 5, Set.of("20", "21", "22", "23")
+        Mockito.when(dataFetcherService.getBoard(any(String.class))).thenReturn(this.getBoard(
+                5, 5, List.of(
+                        new PointDto(2, 0), new PointDto(2, 1),
+                        new PointDto(2, 2), new PointDto(2, 3))
         ));
-        Mockito.when(commandsService.getCommands()).thenReturn(this.getCommands(
+        Mockito.when(dataFetcherService.getCommands(any(String.class))).thenReturn(this.getCommands(
                 List.of("START 0,0,NORTH",
                         "MOVE 4",
                         "ROTATE EAST",
@@ -68,12 +72,18 @@ public class KnightServiceTest extends MainTest {
 
     @Test
     void executeKnightMovements_gettingObstacles_expectSuccessOutput() {
-        Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(
-                10, 10,
-                Set.of("08", "18", "17", "16", "15", "14", "22", "32", "42", "54",
-                        "53", "52", "51", "64", "61", "74", "84", "81", "94", "91")
+        Mockito.when(dataFetcherService.getBoard(any(String.class))).thenReturn(this.getBoard(
+                10, 10, List.of(
+                        new PointDto(0, 8), new PointDto(1, 8), new PointDto(1, 7),
+                        new PointDto(1, 6), new PointDto(1, 5), new PointDto(1, 4),
+                        new PointDto(2, 2), new PointDto(3, 2), new PointDto(4, 2),
+                        new PointDto(5, 4), new PointDto(5, 3), new PointDto(5, 2),
+                        new PointDto(5, 1), new PointDto(6, 4), new PointDto(6, 1),
+                        new PointDto(7, 4), new PointDto(8, 4), new PointDto(8, 1),
+                        new PointDto(9, 4), new PointDto(9, 1)
+                )
         ));
-        Mockito.when(commandsService.getCommands()).thenReturn(this.getCommands(
+        Mockito.when(dataFetcherService.getCommands(any(String.class))).thenReturn(this.getCommands(
                 List.of("START 3,7,SOUTH",
                         "MOVE 4",
                         "ROTATE WEST",
@@ -101,12 +111,13 @@ public class KnightServiceTest extends MainTest {
     @ParameterizedTest
     @MethodSource("multipleInvalidStartPositions")
     void executeKnightMovements_withMultipleInvalidStartPositions_expectInvalidStartPositionOutput(List<String> commands) {
-        Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(5, 5, Set.of("22")));
-        Mockito.when(commandsService.getCommands()).thenReturn(this.getCommands(commands));
+        Mockito.when(dataFetcherService.getBoard(any(String.class)))
+                .thenReturn(this.getBoard(5, 5, List.of(new PointDto(2, 2))));
+        Mockito.when(dataFetcherService.getCommands(any(String.class)))
+                .thenReturn(this.getCommands(commands));
 
-        InvalidStartPositionException ex = assertThrows(InvalidStartPositionException.class, () -> {
-            this.knightService.moveKnight();
-        });
+        InvalidStartPositionException ex =
+                assertThrows(InvalidStartPositionException.class, () -> this.knightService.moveKnight());
 
         assertEquals("INVALID_START_POSITION", ex.getMessage());
     }
@@ -114,8 +125,10 @@ public class KnightServiceTest extends MainTest {
     @ParameterizedTest
     @MethodSource("multipleOutOfBoardMovements")
     void executeKnightMovements_withMultipleOutOfBoardMovements_expectOutOfTheBoardOutput(List<String> commands) {
-        Mockito.when(boardService.getBoard()).thenReturn(this.getBoard(5, 5, Set.of()));
-        Mockito.when(commandsService.getCommands()).thenReturn(this.getCommands(commands));
+        Mockito.when(dataFetcherService.getBoard(any(String.class)))
+                .thenReturn(this.getBoard(5, 5, List.of()));
+        Mockito.when(dataFetcherService.getCommands(any(String.class)))
+                .thenReturn(this.getCommands(commands));
 
         OutOfTheBoardException ex = assertThrows(OutOfTheBoardException.class, () -> {
             this.knightService.moveKnight();
