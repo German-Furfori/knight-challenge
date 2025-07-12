@@ -1,22 +1,41 @@
 package org.jobrapido.challenge.service;
 
+import lombok.RequiredArgsConstructor;
 import org.jobrapido.challenge.dto.input.BoardDto;
 import org.jobrapido.challenge.dto.input.PointDto;
+import org.jobrapido.challenge.exception.InvalidStartPositionException;
 import org.jobrapido.challenge.model.Board;
-import org.jobrapido.challenge.model.Point;
-import org.jobrapido.challenge.utils.DataFetcherUtils;
+import org.jobrapido.challenge.model.Position;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.jobrapido.challenge.utils.JsonUtils.GSON;
-
+@RequiredArgsConstructor
 public class BoardService {
 
-    public Board getBoard() {
-        String response = DataFetcherUtils.getData("BOARD_API");
-        BoardDto board = GSON.fromJson(response, BoardDto.class);
+    private final DataFetcherService dataFetcherService;
 
-        return this.mapBoardDtoToBoard(board);
+    private static final String INVALID_START_POSITION = "INVALID_START_POSITION";
+
+    public Board getBoard() {
+        BoardDto response = dataFetcherService.getBoard("BOARD_API");
+
+        return this.mapBoardDtoToBoard(response);
+    }
+
+    public Position validateStartingPoint(Position position, Board board) {
+        if (this.isOutOfTheBoard(position, board)) throw new InvalidStartPositionException(INVALID_START_POSITION);
+        if (!this.isNotObstacle(position.getX(), position.getY(), board)) throw new InvalidStartPositionException(INVALID_START_POSITION);
+
+        return position;
+    }
+
+    public boolean isNotObstacle(Integer x, Integer y, Board board) {
+        return !board.getObstacles().contains(String.format("%d%d", x, y));
+    }
+
+    private boolean isOutOfTheBoard(Position position, Board board) {
+        return position.getX() >= board.getWidth() || position.getY() >= board.getHeight()
+                || position.getX() < 0 || position.getY() < 0;
     }
 
     private Board mapBoardDtoToBoard(BoardDto boardDto) {

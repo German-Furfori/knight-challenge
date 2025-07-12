@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Point {
+public class Command {
 
-    private Integer x;
+    private String name;
 
-    private Integer y;
+    private String action;
 
 }
