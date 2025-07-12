@@ -5,6 +5,8 @@ import org.jobrapido.challenge.dto.input.PointDto;
 import org.jobrapido.challenge.dto.output.ResultDto;
 import org.jobrapido.challenge.exception.InvalidStartPositionException;
 import org.jobrapido.challenge.exception.OutOfTheBoardException;
+import org.jobrapido.challenge.mapper.BoardMapper;
+import org.jobrapido.challenge.mapper.CommandsMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,9 +23,13 @@ public class KnightServiceTest extends MainTest {
 
     DataFetcherService dataFetcherService = Mockito.mock(DataFetcherService.class);
 
-    BoardService boardService = new BoardService(dataFetcherService);
+    BoardMapper boardMapper = new BoardMapper();
 
-    CommandsService commandsService = new CommandsService(dataFetcherService, boardService);
+    CommandsMapper commandsMapper = new CommandsMapper();
+
+    BoardService boardService = new BoardService(dataFetcherService, boardMapper);
+
+    CommandsService commandsService = new CommandsService(dataFetcherService, boardService, commandsMapper);
 
     KnightService knightService = new KnightService(boardService, commandsService);
 

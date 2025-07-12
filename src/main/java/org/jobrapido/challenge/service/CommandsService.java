@@ -3,12 +3,11 @@ package org.jobrapido.challenge.service;
 import lombok.RequiredArgsConstructor;
 import org.jobrapido.challenge.dto.input.CommandsDto;
 import org.jobrapido.challenge.exception.OutOfTheBoardException;
+import org.jobrapido.challenge.mapper.CommandsMapper;
 import org.jobrapido.challenge.model.Board;
 import org.jobrapido.challenge.model.Commands;
 import org.jobrapido.challenge.model.Command;
 import org.jobrapido.challenge.model.Position;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class CommandsService {
@@ -17,12 +16,14 @@ public class CommandsService {
 
     private final BoardService boardService;
 
+    private final CommandsMapper commandsMapper;
+
     private static final String OUT_OF_THE_BOARD = "OUT_OF_THE_BOARD";
 
     public Commands getCommands() {
         CommandsDto response = dataFetcherService.getCommands("COMMANDS_API");
 
-        return this.mapCommandsDtoToCommands(response);
+        return commandsMapper.mapCommandsDtoToCommands(response);
     }
 
     public void executeCommand(Command command, Position position, Board board) {
@@ -48,27 +49,6 @@ public class CommandsService {
                 }
             }
         }
-    }
-
-    private Commands mapCommandsDtoToCommands(CommandsDto commandsDto) {
-        String[] startingPoint = commandsDto.getCommands().get(0).split(" ")[1].split(",");
-        Position position = new Position(
-                Integer.parseInt(startingPoint[0]),
-                Integer.parseInt(startingPoint[1]),
-                startingPoint[2]
-        );
-
-        List<Command> commands = new ArrayList<>();
-        for (int i = 1; i < commandsDto.getCommands().size(); i++) {
-            Command command = new Command(
-                    commandsDto.getCommands().get(i).split(" ")[0],
-                    commandsDto.getCommands().get(i).split(" ")[1]
-            );
-
-            commands.add(command);
-        }
-
-        return new Commands(position, commands);
     }
 
     private boolean moveSouth(Position position, Board board) {
