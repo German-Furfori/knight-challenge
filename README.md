@@ -24,10 +24,7 @@ docker build -t knight_board:latest .
 
 #### For Execute
 ```bash
-docker run \
-  -e BOARD_API=https://storage.googleapis.com/jobrapido-backend-test/board.json \
-  -e COMMANDS_API=https://storage.googleapis.com/jobrapido-backend-test/commands.json \
-  knight_board:latest
+docker run -e BOARD_API=https://storage.googleapis.com/jobrapido-backend-test/board.json -e COMMANDS_API=https://storage.googleapis.com/jobrapido-backend-test/commands.json knight_board:latest
 ```
 
 ## Output
