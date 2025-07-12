@@ -2,13 +2,12 @@ package org.jobrapido.challenge.dto.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PointDto {
+public class CommandsDto {
 
-    private Integer x;
-
-    private Integer y;
+    private List<String> commands;
 
 }

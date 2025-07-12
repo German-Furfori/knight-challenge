@@ -1,36 +1,41 @@
 package org.jobrapido.challenge.service;
 
+import lombok.RequiredArgsConstructor;
 import org.jobrapido.challenge.dto.input.BoardDto;
-import org.jobrapido.challenge.dto.input.PointDto;
+import org.jobrapido.challenge.exception.InvalidStartPositionException;
+import org.jobrapido.challenge.mapper.BoardMapper;
 import org.jobrapido.challenge.model.Board;
-import org.jobrapido.challenge.model.Point;
-import org.jobrapido.challenge.utils.DataFetcherUtils;
-import java.util.HashSet;
-import java.util.Set;
+import org.jobrapido.challenge.model.Position;
 
-import static org.jobrapido.challenge.utils.JsonUtils.GSON;
-
+@RequiredArgsConstructor
 public class BoardService {
 
-    public Board getBoard() {
-        String response = DataFetcherUtils.getData("https://storage.googleapis.com/jobrapido-backend-test/board.json");
-        BoardDto board = GSON.fromJson(response, BoardDto.class);
+    private final DataFetcherService dataFetcherService;
 
-        return this.mapBoardDtoToBoard(board);
+    private final BoardMapper boardMapper;
+
+    private static final String INVALID_START_POSITION = "INVALID_START_POSITION";
+
+    public Board getBoard() {
+        BoardDto response = dataFetcherService.getBoard("BOARD_API");
+
+        return boardMapper.mapBoardDtoToBoard(response);
     }
 
-    private Board mapBoardDtoToBoard(BoardDto boardDto) {
-        Set<String> obstacles = new HashSet<>();
+    public Position validateStartingPoint(Position position, Board board) {
+        if (this.isOutOfTheBoard(position, board)) throw new InvalidStartPositionException(INVALID_START_POSITION);
+        if (!this.isNotObstacle(position.getX(), position.getY(), board)) throw new InvalidStartPositionException(INVALID_START_POSITION);
 
-        for (PointDto point : boardDto.getObstacles()) {
-            obstacles.add(String.format("%d%d", point.getX(), point.getY()));
-        }
+        return position;
+    }
 
-        return new Board(
-                boardDto.getHeight(),
-                boardDto.getWidth(),
-                obstacles
-        );
+    public boolean isNotObstacle(Integer x, Integer y, Board board) {
+        return !board.getObstacles().contains(String.format("%d%d", x, y));
+    }
+
+    private boolean isOutOfTheBoard(Position position, Board board) {
+        return position.getX() >= board.getWidth() || position.getY() >= board.getHeight()
+                || position.getX() < 0 || position.getY() < 0;
     }
 
 }

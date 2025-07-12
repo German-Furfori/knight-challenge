@@ -2,14 +2,15 @@ package org.jobrapido.challenge.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class Commands {
+public class Position {
 
-    private Position startingPosition;
+    private Integer x;
 
-    private List<Command> commands;
+    private Integer y;
+
+    private String direction;
 
 }
